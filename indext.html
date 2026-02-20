@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="bn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Industrial Blockchain Tracker</title>
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background-color: #f4f7f6; display: flex; justify-content: center; align-items: center; height: 100vh; margin: 0; }
+        .container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); width: 400px; text-align: center; }
+        h2 { color: #2c3e50; margin-bottom: 20px; }
+        input { width: 100%; padding: 12px; margin-bottom: 15px; border: 1px solid #ddd; border-radius: 6px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background-color: #27ae60; color: white; border: none; border-radius: 6px; cursor: pointer; font-size: 16px; transition: 0.3s; }
+        button:hover { background-color: #219150; }
+        #result { margin-top: 20px; text-align: left; padding: 15px; border-radius: 6px; background: #e8f6ef; display: none; }
+        .status-true { color: green; font-weight: bold; }
+        .status-false { color: red; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h2>Industrial Tracker</h2>
+	<button id="connectBtn" onclick="connectWallet()" style="background-color: #3498db; margin-bottom: 20px;">MetaMask কানেক্ট করুন</button>
+<p id="walletAddress" style="font-size: 12px; color: #7f8c8d;"></p>
+    <p>আপনার পণ্যের ব্যাচ আইডি দিন</p>
+    <input type="number" id="batchId" placeholder="উদাহরণ: 101">
+    <button onclick="verifyProduct()">পণ্য যাচাই করুন</button>
+
+    <div id="result">
+        <p><strong>ব্যাচ আইডি:</strong> <span id="resId"></span></p>
+        <p><strong>ডিজিটাল হাশ:</strong> <span id="resHash" style="font-size: 10px; word-break: break-all;"></span></p>
+        <p><strong>ভেরিফিকেশন স্ট্যাটাস:</strong> <span id="resStatus"></span></p>
+        <p><strong>আপলোড টাইম:</strong> <span id="resTime"></span></p>
+    </div>
+</div>
+
+<script>
+    let provider;
+let signer;
+
+// ১. মেটামাস্ক কানেক্ট করার ফাংশন
+async function connectWallet() {
+    if (window.ethereum) {
+        try {
+            // মেটামাস্ক পারমিশন চাইবে
+            provider = new ethers.BrowserProvider(window.ethereum);
+            await provider.send("eth_requestAccounts", []);
+            signer = await provider.getSigner();
+            
+            const address = await signer.getAddress();
+            document.getElementById('walletAddress').innerText = "কানেক্টেড: " + address;
+            document.getElementById('connectBtn').innerText = "Wallet Connected ✅";
+            document.getElementById('connectBtn').style.backgroundColor = "#2ecc71";
+            
+            console.log("Wallet Connected:", address);
+        } catch (error) {
+            alert("কানেক্ট করতে সমস্যা হয়েছে!");
+        }
+    } else {
+        alert("দয়া করে MetaMask ইনস্টল করুন!");
+    }
+}
+
+// ২. পণ্য যাচাই করার ফাংশন (Smart Contract Integration)
+async function verifyProduct() {
+    const id = document.getElementById('batchId').value;
+    if(!id) return alert("ব্যাচ আইডি দিন!");
+
+    // যেহেতু আমাদের কাছে এখন টোকেন নেই, আমরা এখানে আসল ডাটাবেজের ডামি ডাটা দেখাচ্ছি
+    // কিন্তু যখন তোমার কাছে MATIC থাকবে, তখন নিচের এই ৩টি লাইন আসল কাজ করবে:
+    
+    /* 
+    const contractAddress = "YOUR_DEPLOYED_CONTRACT_ADDRESS";
+    const abi = ["function batches(uint256) view returns (bytes32, uint256, bool, uint8)"];
+    const contract = new ethers.Contract(contractAddress, abi, provider);
+    const data = await contract.batches(id); 
+    */
+
+    // প্রেজেন্টেশনের জন্য সিমুলেশন ডাটা:
+    if(id == "101") {
+        document.getElementById('result').style.display = "block";
+        document.getElementById('resId').innerText = id;
+        document.getElementById('resHash').innerText = "0x8fa3567890abcdef1234567890abcdef12345678 (Blockchain Verified)";
+        document.getElementById('resStatus').innerHTML = "<span class='status-true'>VERIFIED BY CONSENSUS ✅</span>";
+        document.getElementById('resTime').innerText = "Block Timestamp: " + new Date().toLocaleString();
+    } else {
+        alert("এই পণ্যটি ব্লকচেইনে পাওয়া যায়নি। জালিয়াতির সম্ভাবনা আছে!");
+    }
+}
+</script>
+
+</body>
+</html>
