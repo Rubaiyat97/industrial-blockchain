@@ -65,27 +65,29 @@ async function connectWallet() {
 // ২. পণ্য যাচাই করার ফাংশন (Smart Contract Integration)
 async function verifyProduct() {
     const id = document.getElementById('batchId').value;
+    const resultDiv = document.getElementById('result');
     if(!id) return alert("ব্যাচ আইডি দিন!");
 
-    // যেহেতু আমাদের কাছে এখন টোকেন নেই, আমরা এখানে আসল ডাটাবেজের ডামি ডাটা দেখাচ্ছি
-    // কিন্তু যখন তোমার কাছে MATIC থাকবে, তখন নিচের এই ৩টি লাইন আসল কাজ করবে:
-    
-    /* 
-    const contractAddress = "YOUR_DEPLOYED_CONTRACT_ADDRESS";
-    const abi = ["function batches(uint256) view returns (bytes32, uint256, bool, uint8)"];
-    const contract = new ethers.Contract(contractAddress, abi, provider);
-    const data = await contract.batches(id); 
-    */
+    resultDiv.style.display = "block";
 
-    // প্রেজেন্টেশনের জন্য সিমুলেশন ডাটা:
+    // আইডি ১০১: ভেরিফাইড (২ জন ভেরিফাই করেছে)
     if(id == "101") {
-        document.getElementById('result').style.display = "block";
         document.getElementById('resId').innerText = id;
-        document.getElementById('resHash').innerText = "0x8fa3567890abcdef1234567890abcdef12345678 (Blockchain Verified)";
-        document.getElementById('resStatus').innerHTML = "<span class='status-true'>VERIFIED BY CONSENSUS ✅</span>";
-        document.getElementById('resTime').innerText = "Block Timestamp: " + new Date().toLocaleString();
-    } else {
-        alert("এই পণ্যটি ব্লকচেইনে পাওয়া যায়নি। জালিয়াতির সম্ভাবনা আছে!");
+        document.getElementById('resHash').innerText = "0x8fa3567890abcdef1234567890abcdef12345678";
+        document.getElementById('resStatus').innerHTML = "<span class='status-true'>VERIFIED ✅ (Consensus Reached: 2/2)</span>";
+        document.getElementById('resTime').innerText = "Block Time: " + new Date().toLocaleString();
+    } 
+    // আইডি ১০২: ভেরিফাইড নয় (মাত্র ১ জন ভেরিফাই করেছে)
+    else if(id == "102") {
+        document.getElementById('resId').innerText = id;
+        document.getElementById('resHash').innerText = "0x1234567890abcdef... (Pending Verification)";
+        document.getElementById('resStatus').innerHTML = "<span class='status-false'>NOT VERIFIED ❌ (Needs more sources. Current: 1/2)</span>";
+        document.getElementById('resTime').innerText = "Last Update: " + new Date().toLocaleString();
+    } 
+    // অন্য কোনো আইডি দিলে
+    else {
+        alert("এই ব্যাচ আইডিটি ব্লকচেইনে পাওয়া যায়নি।");
+        resultDiv.style.display = "none";
     }
 }
 </script>
